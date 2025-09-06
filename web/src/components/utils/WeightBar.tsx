@@ -1,37 +1,21 @@
 import React, { useMemo } from 'react';
 
-const colorChannelMixer = (colorChannelA: number, colorChannelB: number, amountToMix: number) => {
-  let channelA = colorChannelA * amountToMix;
-  let channelB = colorChannelB * (1 - amountToMix);
-  return channelA + channelB;
-};
-
-const colorMixer = (rgbA: number[], rgbB: number[], amountToMix: number) => {
-  let r = colorChannelMixer(rgbA[0], rgbB[0], amountToMix);
-  let g = colorChannelMixer(rgbA[1], rgbB[1], amountToMix);
-  let b = colorChannelMixer(rgbA[2], rgbB[2], amountToMix);
-  return `rgb(${r}, ${g}, ${b})`;
-};
-
-const COLORS = {
-  // Colors used - https://materialui.co/flatuicolors
-  primaryColor: [231, 76, 60], // Red (Pomegranate)
-  secondColor: [39, 174, 96], // Green (Nephritis)
-  accentColor: [211, 84, 0], // Orange (Oragne)
-};
-
 const WeightBar: React.FC<{ percent: number; durability?: boolean }> = ({ percent, durability }) => {
-  const color = useMemo(
-    () =>
-      durability
-        ? percent < 50
-          ? colorMixer(COLORS.accentColor, COLORS.primaryColor, percent / 100)
-          : colorMixer(COLORS.secondColor, COLORS.accentColor, percent / 100)
-        : percent > 50
-        ? colorMixer(COLORS.primaryColor, COLORS.accentColor, percent / 100)
-        : colorMixer(COLORS.accentColor, COLORS.secondColor, percent / 50),
-    [durability, percent]
-  );
+  const getBarColor = (percent: number, isDurability: boolean) => {
+    if (isDurability) {
+      if (percent > 75) return 'linear-gradient(90deg, #00ff00, #32cd32)';
+      if (percent > 50) return 'linear-gradient(90deg, #ffff00, #ffa500)';
+      if (percent > 25) return 'linear-gradient(90deg, #ffa500, #ff4500)';
+      return 'linear-gradient(90deg, #ff4500, #ff0000)';
+    } else {
+      if (percent < 50) return 'linear-gradient(90deg, #00ff00, #32cd32)';
+      if (percent < 75) return 'linear-gradient(90deg, #ffff00, #ffa500)';
+      if (percent < 90) return 'linear-gradient(90deg, #ffa500, #ff4500)';
+      return 'linear-gradient(90deg, #ff4500, #ff0000)';
+    }
+  };
+
+  const barColor = useMemo(() => getBarColor(percent, durability || false), [percent, durability]);
 
   return (
     <div className={durability ? 'durability-bar' : 'weight-bar'}>
@@ -39,12 +23,25 @@ const WeightBar: React.FC<{ percent: number; durability?: boolean }> = ({ percen
         style={{
           visibility: percent > 0 ? 'visible' : 'hidden',
           height: '100%',
-          width: `${percent}%`,
-          backgroundColor: color,
-          transition: `background ${0.3}s ease, width ${0.3}s ease`,
+          width: `${Math.min(percent, 100)}%`,
+          background: barColor,
+          transition: 'width 0.3s ease, background 0.3s ease',
+          position: 'relative',
         }}
-      ></div>
+      >
+        {/* Animated shine effect */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
+          animation: percent > 0 ? 'shimmer 2s infinite' : 'none',
+        }} />
+      </div>
     </div>
   );
 };
+
 export default WeightBar;

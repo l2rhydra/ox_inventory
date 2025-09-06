@@ -117,6 +117,22 @@ const InventorySlot: React.ForwardRefRenderFunction<HTMLDivElement, SlotProps> =
     }
   };
 
+  const getSlotClassName = () => {
+    let className = 'inventory-slot';
+    
+    if (isSlotWithItem(item)) {
+      // Add rarity classes based on metadata
+      if (item.metadata?.rarity === 'rare') className += ' rare';
+      if (item.metadata?.rarity === 'epic') className += ' epic';
+      if (item.metadata?.rarity === 'legendary') className += ' legendary';
+      
+      // Add equipped class for weapons
+      if (item.metadata?.equipped) className += ' equipped';
+    }
+    
+    return className;
+  };
+
   const refs = useMergeRefs([connectRef, ref]);
 
   return (
@@ -124,15 +140,16 @@ const InventorySlot: React.ForwardRefRenderFunction<HTMLDivElement, SlotProps> =
       ref={refs}
       onContextMenu={handleContext}
       onClick={handleClick}
-      className="inventory-slot"
+      className={getSlotClassName()}
       style={{
         filter:
           !canPurchaseItem(item, { type: inventoryType, groups: inventoryGroups }) || !canCraftItem(item, inventoryType)
-            ? 'brightness(80%) grayscale(100%)'
+            ? 'brightness(60%) grayscale(100%)'
             : undefined,
         opacity: isDragging ? 0.4 : 1.0,
         backgroundImage: `url(${item?.name ? getItemUrl(item as SlotWithItem) : 'none'}`,
-        border: isOver ? '1px dashed rgba(255,255,255,0.4)' : '',
+        border: isOver ? '2px solid #ff0000' : undefined,
+        boxShadow: isOver ? '0 0 25px rgba(255, 0, 0, 0.6)' : undefined,
       }}
     >
       {isSlotWithItem(item) && (
@@ -163,43 +180,35 @@ const InventorySlot: React.ForwardRefRenderFunction<HTMLDivElement, SlotProps> =
                   ? item.weight >= 1000
                     ? `${(item.weight / 1000).toLocaleString('en-us', {
                         minimumFractionDigits: 2,
-                      })}kg `
+                      })}kg`
                     : `${item.weight.toLocaleString('en-us', {
                         minimumFractionDigits: 0,
-                      })}g `
+                      })}g`
                   : ''}
               </p>
-              <p>{item.count ? item.count.toLocaleString('en-us') + `x` : ''}</p>
+              <p>{item.count ? `${item.count.toLocaleString('en-us')}x` : ''}</p>
             </div>
           </div>
+          
           <div>
             {inventoryType !== 'shop' && item?.durability !== undefined && (
               <WeightBar percent={item.durability} durability />
             )}
+            
             {inventoryType === 'shop' && item?.price !== undefined && (
               <>
                 {item?.currency !== 'money' && item.currency !== 'black_money' && item.price > 0 && item.currency ? (
                   <div className="item-slot-currency-wrapper">
                     <img
                       src={item.currency ? getItemUrl(item.currency) : 'none'}
-                      alt="item-image"
-                      style={{
-                        imageRendering: '-webkit-optimize-contrast',
-                        height: 'auto',
-                        width: '2vh',
-                        backfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)',
-                      }}
+                      alt="currency"
                     />
                     <p>{item.price.toLocaleString('en-us')}</p>
                   </div>
                 ) : (
                   <>
                     {item.price > 0 && (
-                      <div
-                        className="item-slot-price-wrapper"
-                        style={{ color: item.currency === 'money' || !item.currency ? '#2ECC71' : '#E74C3C' }}
-                      >
+                      <div className="item-slot-price-wrapper">
                         <p>
                           {Locale.$ || '$'}
                           {item.price.toLocaleString('en-us')}
@@ -210,12 +219,28 @@ const InventorySlot: React.ForwardRefRenderFunction<HTMLDivElement, SlotProps> =
                 )}
               </>
             )}
+            
             <div className="inventory-slot-label-box">
               <div className="inventory-slot-label-text">
                 {item.metadata?.label ? item.metadata.label : Items[item.name]?.label || item.name}
               </div>
             </div>
           </div>
+        </div>
+      )}
+      
+      {/* Empty slot indicator */}
+      {!isSlotWithItem(item) && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          opacity: 0.3,
+          fontSize: '24px',
+          color: '#666666'
+        }}>
+          +
         </div>
       )}
     </div>

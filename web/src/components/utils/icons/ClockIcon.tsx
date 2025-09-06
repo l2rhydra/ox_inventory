@@ -2,11 +2,11 @@ export const ClockIcon: React.FC = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
-      strokeWidth="1.5"
-      stroke="#ffffff"
+      strokeWidth="2"
+      stroke="currentColor"
       fill="none"
       strokeLinecap="round"
       strokeLinejoin="round"

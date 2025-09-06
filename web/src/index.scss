@@ -1,43 +1,64 @@
-$mainColor: #22232c;
-$textColor: #c1c2c5;
-$mainFont: Roboto;
+$primaryRed: #ff0000;
+$secondaryRed: #cc0000;
+$darkRed: #990000;
+$accentRed: #ff3333;
+$brightRed: #ff6666;
 
-$secondaryColor: rgba(12, 12, 12, 0.4);
-$secondaryColorHighlight: #33343F;
-$secondaryColorLight: rgba(0, 0, 0, 0.5);
-$secondaryColorDark: rgba(12, 12, 12, 0.8);
+$darkBg: #0a0a0a;
+$cardBg: rgba(20, 20, 20, 0.95);
+$overlayBg: rgba(0, 0, 0, 0.8);
+$borderColor: rgba(255, 0, 0, 0.3);
+$textPrimary: #ffffff;
+$textSecondary: #cccccc;
+$textMuted: #888888;
 
-$gridCols: 5;
-$gridRows: 5;
-$gridSize: 10.2vh;
-$gridGap: 2px;
-$containerSize: calc(#{$gridRows} * #{$gridSize + 0.22vh} + #{$gridRows} * #{$gridGap});
+$mainFont: 'Roboto', sans-serif;
+
+$gridCols: 8;
+$gridRows: 6;
+$gridSize: 80px;
+$gridGap: 8px;
+$containerSize: calc(#{$gridRows} * #{$gridSize} + #{$gridRows - 1} * #{$gridGap});
+
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
-    'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: $mainFont;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
   background: none !important;
   overflow: hidden !important;
   user-select: none;
+  color: $textPrimary;
 }
 
 #root {
   height: 100%;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
 ::-webkit-scrollbar {
-  display: none;
+  width: 8px;
 }
 
-p {
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, $primaryRed, $darkRed);
+  border-radius: 4px;
+  
+  &:hover {
+    background: linear-gradient(180deg, $accentRed, $primaryRed);
+  }
+}
+
+p, h1, h2, h3, h4, h5, h6 {
   margin: 0;
   padding: 0;
   font-family: $mainFont;
@@ -53,279 +74,238 @@ input[type='number']::-webkit-outer-spin-button {
 .app-wrapper {
   height: 100%;
   width: 100%;
-  color: white;
+  color: $textPrimary;
+  background: radial-gradient(ellipse at center, rgba(20, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%);
+  backdrop-filter: blur(10px);
 }
 
-.context-menu-list {
-  min-width: 200px;
-  background-color: $mainColor;
-  color: $textColor;
-  padding: 4px;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-style: inset;
-  border-width: 1px;
-  border-radius: 4px;
-  outline: none;
-  display: flex;
-  flex-direction: column;
-}
-
-.context-menu-item  {
-  padding: 8px;
-  border-radius: 4px;
-  background-color: transparent;
-  outline: none;
-  border: none;
-  color: $textColor;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  &:active {
-    transform: none;
-  }
-  &:hover {
-    background-color: $secondaryColorHighlight;
-    cursor: pointer;
-  }
-}
-
-.tooltip-description {
-  padding-top: 5px;
-}
-
-.tooltip-markdown > p {
-  margin: 0;
-}
-
-button:active {
-  transform: translateY(3px);
-}
-
-.item-drag-preview {
-  width: 7.7vh;
-  height: 7.7vh;
-  z-index: 1;
-  position: fixed;
-  pointer-events: none;
-  top: 0;
-  left: 0;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 7vh;
-  image-rendering: -webkit-optimize-contrast;
-}
-
+// Main inventory layout
 .inventory-wrapper {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
-  height: 100%;
-
-  gap: 20px;
-}
-
-.inventory-control {
-  display: flex;
-
-  .inventory-control-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .inventory-control-input {
-    transition: 200ms;
-    padding: 16px 8px;
-    border-radius: 2.5%;
-    font-family: $mainFont;
-    font-size: 16px;
-    text-align: center;
-    outline: none;
-    border: none;
-    color: #fff;
-    background-color: $secondaryColor;
-    &:focus-within {
-      background-color: $secondaryColorDark;
-    }
-  }
-
-  .inventory-control-button {
-    font-size: 14px;
-    color: #fff;
-    background-color: $secondaryColor;
-    transition: 200ms;
-    padding: 12px 8px;
-    border-radius: 2.5%;
-    border: none;
-    text-transform: uppercase;
-    font-family: $mainFont;
-    width: 100%;
-    font-weight: 500;
-    &:hover {
-      background-color: $secondaryColorDark;
-    }
+  align-items: flex-start;
+  height: 100vh;
+  padding: 40px 20px;
+  gap: 40px;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 0, 0, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
   }
 }
 
-.useful-controls-dialog {
-  background-color: $mainColor;
+// Header section
+.inventory-header {
   position: absolute;
-  top: 50%;
+  top: 20px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  color: $textColor;
-  width: 450px;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  border-radius: 4px;
-  gap: 16px;
-}
-
-.useful-controls-dialog-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.useful-controls-dialog-title {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 18px;
-}
-
-.useful-controls-dialog-close {
-  width: 25px;
-  height: 25px;
-  padding: 6px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-  fill: $textColor;
-  &:hover {
-    background-color: $secondaryColorHighlight;
-    cursor: pointer;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 100;
+  
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, $primaryRed, $accentRed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
   }
 }
 
-.useful-controls-content-wrapper {
+// Player info section
+.player-info {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  gap: 15px;
+  background: $cardBg;
+  padding: 15px 25px;
+  border-radius: 12px;
+  border: 1px solid $borderColor;
+  backdrop-filter: blur(10px);
+  z-index: 99;
+  
+  .player-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $primaryRed, $darkRed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+  }
+  
+  .player-details {
+    .player-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: $textPrimary;
+      margin-bottom: 5px;
+    }
+    
+    .player-stats {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+      color: $textSecondary;
+      
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        
+        .stat-icon {
+          width: 16px;
+          height: 16px;
+          fill: $primaryRed;
+        }
+      }
+    }
+  }
 }
 
-.divider {
-  width: 100%;
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.12);
-}
-
-.useful-controls-button {
-  position: absolute !important;
-  bottom: 25px;
-  right: 25px;
-  transition: 200ms !important;
+// Close button
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, $primaryRed, $darkRed);
   border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
   color: white;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  fill: white;
-  border-radius: 5% !important;
-  background-color: $secondaryColor !important;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+  
   &:hover {
-    background-color: $secondaryColorDark !important;
-    cursor: pointer;
+    background: linear-gradient(135deg, $accentRed, $primaryRed);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
   }
 }
 
-.useful-controls-exit-button {
-  position: absolute !important;
-  right: 8px;
-  top: 8px;
-  border-radius: 2.5% !important;
-  color: grey !important;
-}
-
-// Dialog is used fro useful controls window
-
-
-// inventory grids
+// Inventory grids
 .inventory-grid-wrapper {
   display: flex;
   flex-direction: column;
-  gap: calc($gridGap * 2);
+  gap: 20px;
+  background: $cardBg;
+  border-radius: 16px;
+  padding: 25px;
+  border: 1px solid $borderColor;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $primaryRed, transparent);
+    border-radius: 16px 16px 0 0;
+  }
 }
+
 .inventory-grid-header-wrapper {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  
   p {
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: $textPrimary;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    &:first-child {
+      background: linear-gradient(135deg, $primaryRed, $accentRed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
   }
 }
 
 .inventory-grid-container {
   display: grid;
-  height: $containerSize;
   grid-template-columns: repeat($gridCols, $gridSize);
-  grid-auto-rows: $gridSize + 0.22vh;
+  grid-auto-rows: $gridSize;
   gap: $gridGap;
-  overflow-y: scroll;
+  max-height: $containerSize;
+  overflow-y: auto;
+  padding-right: 5px;
 }
 
-// inventory slots
+// Inventory slots
 .inventory-slot {
-  background-color: $secondaryColor;
+  background: linear-gradient(135deg, rgba(40, 40, 40, 0.8), rgba(20, 20, 20, 0.9));
   background-repeat: no-repeat;
   background-position: center;
-  border-radius: 2.5%;
-  image-rendering: -webkit-optimize-contrast;
+  background-size: 60px;
+  border-radius: 12px;
   position: relative;
-  background-size: 7vh;
-  color: $textColor;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-style: inset;
-  border-width: 1px;
-}
-
-.inventory-slot-label-box {
-  background-color: $mainColor;
-  color: $textColor;
-  text-align: center;
-  border-bottom-left-radius: 0.25vh;
-  border-bottom-right-radius: 0.25vh;
-  border-top-color: rgba(0, 0, 0, 0.2);
-  border-top-style: inset;
-  border-top-width: 1px;
-}
-
-.inventory-slot-label-text {
-  text-transform: uppercase;
-  white-space: nowrap;
+  color: $textPrimary;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
   overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 2px 3px;
-  font-weight: 400;
-  font-family: $mainFont;
-  font-size: 12px;
-}
-
-.inventory-slot-number {
-  background-color: white;
-  color: black;
-  height: 12px;
-  border-top-left-radius: 0.25vh;
-  border-bottom-right-radius: 0.25vh;
-  padding: 3px;
-  font-size: 12px;
-  font-family: $mainFont;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    border-color: $primaryRed;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3);
+    
+    &::before {
+      opacity: 1;
+    }
+  }
 }
 
 .item-slot-wrapper {
@@ -333,197 +313,716 @@ button:active {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  p {
-    font-size: 12px;
-  }
+  padding: 8px;
+  position: relative;
+  z-index: 2;
 }
 
-.item-slot-header-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
+.item-slot-header-wrapper,
 .item-hotslot-header-wrapper {
-  @extend .item-slot-header-wrapper;
-  justify-content: space-between !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: auto;
+}
+
+.inventory-slot-number {
+  background: linear-gradient(135deg, $primaryRed, $darkRed);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4);
 }
 
 .item-slot-info-wrapper {
   display: flex;
-  flex-direction: row;
-  align-self: flex-end;
-  padding: 3px;
-  gap: 3px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  
   p {
-    font-size: 12px;
+    font-size: 10px;
+    font-weight: 500;
+    color: $textSecondary;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  }
+}
+
+.inventory-slot-label-box {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 20, 0.9));
+  border-radius: 0 0 8px 8px;
+  margin: 0 -8px -8px -8px;
+  border-top: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.inventory-slot-label-text {
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 6px 8px;
+  font-weight: 500;
+  font-size: 11px;
+  color: $textPrimary;
+  text-align: center;
+}
+
+// Price and currency displays
+.item-slot-price-wrapper {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 20, 0.9));
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px solid $borderColor;
+  
+  p {
+    font-size: 11px;
+    font-weight: 600;
+    color: $primaryRed;
   }
 }
 
 .item-slot-currency-wrapper {
+  @extend .item-slot-price-wrapper;
   display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
   align-items: center;
-  padding-right: 3px;
-  p {
-    font-size: 14px;
-    text-shadow: 0.1vh 0.1vh 0 rgba(0, 0, 0, 0.7);
+  gap: 4px;
+  
+  img {
+    width: 16px;
+    height: 16px;
   }
 }
 
-.item-slot-price-wrapper {
+// Control panel
+.inventory-control {
   display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  padding-right: 3px;
-  p {
-    font-size: 14px;
-    text-shadow: 0.1vh 0.1vh 0 rgba(0, 0, 0, 0.7);
-  }
-}
-
-
-.tooltip-wrapper {
-  pointer-events: none;
-  display: flex;
-  background-color: $mainColor;
-  width: 200px;
-  padding: 8px;
   flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
   min-width: 200px;
-  color: $textColor;
-  font-family: $mainFont;
-  border-radius: 4px;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-style: inset;
-  border-width: 1px;
-  p {
+}
+
+.inventory-control-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: $cardBg;
+  padding: 25px;
+  border-radius: 16px;
+  border: 1px solid $borderColor;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $primaryRed, transparent);
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+.control-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, $primaryRed, $darkRed);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+    
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+  }
+  
+  .section-label {
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 600;
+    color: $textSecondary;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+.inventory-control-input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  font-family: $mainFont;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  outline: none;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: $textPrimary;
+  background: rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border-color: $primaryRed;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.7);
+  }
+  
+  &::placeholder {
+    color: $textMuted;
+  }
+}
+
+.inventory-control-button {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: none;
+  font-family: $mainFont;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  &:hover::before {
+    left: 100%;
+  }
+  
+  &.primary {
+    background: linear-gradient(135deg, $primaryRed, $darkRed);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+    
+    &:hover {
+      background: linear-gradient(135deg, $accentRed, $primaryRed);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.6);
+    }
+  }
+  
+  &.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: $textPrimary;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    &:hover {
+      background: rgba(255, 0, 0, 0.2);
+      border-color: $primaryRed;
+      transform: translateY(-2px);
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Weight bars
+.weight-bar {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  
+  div {
+    height: 100%;
+    background: linear-gradient(90deg, $primaryRed, $accentRed);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+  }
+}
+
+.durability-bar {
+  height: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+  
+  div {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+}
+
+// Tooltips
+.tooltip-wrapper {
+  background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(40, 40, 40, 0.95));
+  backdrop-filter: blur(15px);
+  border: 1px solid $borderColor;
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 250px;
+  max-width: 350px;
+  color: $textPrimary;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $primaryRed, transparent);
+    border-radius: 12px 12px 0 0;
   }
 }
 
 .tooltip-header-wrapper {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 15px;
+  
   p {
-    font-size: 15px;
-    font-weight: 400;
+    font-size: 16px;
+    font-weight: 600;
+    color: $textPrimary;
+    
+    &:first-child {
+      background: linear-gradient(135deg, $primaryRed, $accentRed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+}
+
+.tooltip-description {
+  margin: 15px 0;
+  
+  .tooltip-markdown p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: $textSecondary;
   }
 }
 
 .tooltip-crafting-duration {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 0, 0, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  
   svg {
-    padding-right: 3px;
+    fill: $primaryRed;
   }
+  
   p {
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: $primaryRed;
   }
 }
 
 .tooltip-ingredients {
-  padding-top: 5px;
-}
-
-.tooltip-ingredient {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  img {
-    width: 28px;
-    height: 28px;
-    padding-right: 5px;
+  margin-top: 15px;
+  
+  .tooltip-ingredient {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    img {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+    }
+    
+    p {
+      font-size: 13px;
+      color: $textSecondary;
+    }
   }
 }
 
-// hotbar
+// Context menu
+.context-menu-list {
+  min-width: 200px;
+  background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(40, 40, 40, 0.95));
+  backdrop-filter: blur(15px);
+  border: 1px solid $borderColor;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $primaryRed, transparent);
+    border-radius: 12px 12px 0 0;
+  }
+}
+
+.context-menu-item {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: $textPrimary;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  &:hover {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 0, 0, 0.1));
+    color: white;
+    transform: translateX(4px);
+  }
+  
+  &:active {
+    transform: translateX(2px);
+  }
+}
+
+// Hotbar
 .hotbar-container {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 12px;
   justify-content: center;
-  width: 100%;
-  position: absolute;
-  bottom: 2vh;
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: $cardBg;
+  padding: 15px 20px;
+  border-radius: 16px;
+  border: 1px solid $borderColor;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
 .hotbar-item-slot {
   @extend .inventory-slot;
   width: $gridSize;
   height: $gridSize;
-}
-
-.hotbar-slot-header-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-// item notifications
-
-.item-notification-container {
-  display: flex;
-  overflow-x: scroll;
-  flex-wrap: nowrap;
-  gap: 2px;
-  position: absolute;
-  bottom: 20vh;
-  left: 50%;
-  width: 100%;
-  margin-left: calc(50% - calc($gridSize/2));
-  transform: translate(-50%);
-}
-
-.item-notification-action-box {
-  width: 100%;
-  color: $textColor;
-  background-color: $secondaryColor;
-  text-transform: uppercase;
-  text-align: center;
-  border-top-left-radius: 0.25vh;
-  border-top-right-radius: 0.25vh;
-  font-family: $mainFont;
-  p {
-    font-size: 11px;
-    padding: 2px;
-    font-weight: 600;
+  
+  &:hover {
+    transform: translateY(-4px) scale(1.05);
   }
+}
+
+// Item notifications
+.item-notification-container {
+  position: fixed;
+  bottom: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
 }
 
 .item-notification-item-box {
   @extend .inventory-slot;
-  height: $gridSize;
   width: $gridSize;
+  height: $gridSize;
+  animation: slideInUp 0.3s ease, slideOutDown 0.3s ease 2.2s;
 }
 
-.durability-bar {
-  background: rgba(0, 0, 0, 0.5);
-  height: 3px;
-  overflow: hidden;
+.item-notification-action-box {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, $primaryRed, $darkRed);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+  white-space: nowrap;
 }
 
-.weight-bar {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px inset rgba(0, 0, 0, 0.1);
-  height: 0.8vh;
-  border-radius: 5%;
-  overflow: hidden;
+// Useful controls dialog
+.useful-controls-dialog {
+  background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(40, 40, 40, 0.95));
+  backdrop-filter: blur(15px);
+  border: 1px solid $borderColor;
+  border-radius: 16px;
+  padding: 30px;
+  width: 500px;
+  max-width: 90vw;
+  color: $textPrimary;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, $primaryRed, transparent);
+    border-radius: 16px 16px 0 0;
+  }
 }
 
+.useful-controls-dialog-overlay {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+.useful-controls-dialog-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  
+  p {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, $primaryRed, $accentRed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+.useful-controls-dialog-close {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: $textSecondary;
+    transition: fill 0.3s ease;
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, $primaryRed, $darkRed);
+    
+    svg {
+      fill: white;
+    }
+  }
+}
+
+.useful-controls-content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  
+  p {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border-left: 3px solid $primaryRed;
+    
+    kbd {
+      background: linear-gradient(135deg, $primaryRed, $darkRed);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+      align-self: flex-start;
+    }
+  }
+}
+
+.useful-controls-button {
+  position: fixed !important;
+  bottom: 25px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, $primaryRed, $darkRed) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+  z-index: 1000;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, $accentRed, $primaryRed) !important;
+    transform: translateY(-4px) scale(1.1) !important;
+    box-shadow: 0 12px 35px rgba(255, 0, 0, 0.6);
+  }
+  
+  &:active {
+    transform: translateY(-2px) scale(1.05) !important;
+  }
+}
+
+// Divider
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, $primaryRed, transparent);
+  margin: 15px 0;
+}
+
+// Drag preview
+.item-drag-preview {
+  width: 80px;
+  height: 80px;
+  position: fixed;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60px;
+  border-radius: 12px;
+  border: 2px solid $primaryRed;
+  background-color: rgba(20, 20, 20, 0.9);
+  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.6);
+  z-index: 10000;
+}
+
+// Animations
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+  }
+}
+
+// Transitions
 .transition-fade-enter {
   opacity: 0;
 }
 
 .transition-fade-enter-active {
   opacity: 1;
-  transition: opacity 200ms;
+  transition: opacity 300ms ease;
 }
 
 .transition-fade-exit {
@@ -532,23 +1031,118 @@ button:active {
 
 .transition-fade-exit-active {
   opacity: 0;
-  transition: opacity 200ms;
+  transition: opacity 300ms ease;
 }
 
 .transition-slide-up-enter {
-  transform: translateY(200px)
+  transform: translateY(100px);
+  opacity: 0;
 }
 
 .transition-slide-up-enter-active {
-  transform: translateY(0px);
-  transition: all 200ms;
+  transform: translateY(0);
+  opacity: 1;
+  transition: all 300ms ease;
 }
 
 .transition-slide-up-exit {
-  transform: translateY(0px);
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .transition-slide-up-exit-active {
-  transform: translateY(200px);
-  transition: all 200ms;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 300ms ease;
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+  .inventory-wrapper {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .inventory-grid-container {
+    grid-template-columns: repeat(6, $gridSize);
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-grid-container {
+    grid-template-columns: repeat(4, $gridSize);
+  }
+  
+  .useful-controls-dialog {
+    width: 90vw;
+    padding: 20px;
+  }
+}
+
+// Special effects for equipped items
+.inventory-slot.equipped {
+  border-color: $primaryRed;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  animation: pulse 2s infinite;
+  
+  &::before {
+    opacity: 0.3;
+  }
+}
+
+// Loading states
+.inventory-slot.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid $primaryRed;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Enhanced visual feedback
+.inventory-slot:active {
+  transform: scale(0.95);
+}
+
+.inventory-control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// Glow effects for rare items
+.inventory-slot.rare {
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+  border-color: #ffd700;
+}
+
+.inventory-slot.epic {
+  box-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
+  border-color: #8a2be2;
+}
+
+.inventory-slot.legendary {
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.5);
+  border-color: #ff8c00;
 }

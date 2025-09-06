@@ -58,7 +58,39 @@ const DragPreview: React.FC = () => {
             transform: `translate(${currentOffset.x}px, ${currentOffset.y}px)`,
             backgroundImage: data.image,
           }}
-        />
+        >
+          {/* Enhanced drag preview with glow effect */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, rgba(255, 0, 0, 0.3), transparent)',
+            borderRadius: '12px',
+            pointerEvents: 'none',
+          }} />
+          
+          {/* Drag indicator */}
+          <div style={{
+            position: 'absolute',
+            top: '-8px',
+            right: '-8px',
+            width: '20px',
+            height: '20px',
+            background: 'linear-gradient(135deg, #ff0000, #990000)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '12px',
+            color: 'white',
+            fontWeight: '700',
+            boxShadow: '0 4px 15px rgba(255, 0, 0, 0.6)',
+          }}>
+            ↗
+          </div>
+        </div>
       )}
     </>
   );

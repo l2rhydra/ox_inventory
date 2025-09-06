@@ -33,6 +33,7 @@ const ItemNotification = React.forwardRef(
         className="item-notification-item-box"
         style={{
           backgroundImage: `url(${getItemUrl(slotItem) || 'none'}`,
+          position: 'relative',
           ...props.style,
         }}
         ref={ref}
@@ -42,8 +43,35 @@ const ItemNotification = React.forwardRef(
             <p>{props.item.text}</p>
           </div>
           <div className="inventory-slot-label-box">
-            <div className="inventory-slot-label-text">{slotItem.metadata?.label || Items[slotItem.name]?.label}</div>
+            <div className="inventory-slot-label-text">
+              {slotItem.metadata?.label || Items[slotItem.name]?.label || slotItem.name}
+            </div>
           </div>
+        </div>
+        
+        {/* Enhanced notification with icon */}
+        <div style={{
+          position: 'absolute',
+          top: '8px',
+          left: '8px',
+          width: '20px',
+          height: '20px',
+          background: 'linear-gradient(135deg, #ff0000, #990000)',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 2px 8px rgba(255, 0, 0, 0.6)',
+        }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+            {props.item.text.includes('Added') || props.item.text.includes('+') ? (
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            ) : props.item.text.includes('Removed') || props.item.text.includes('-') ? (
+              <path d="M19 13H5v-2h14v2z"/>
+            ) : (
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            )}
+          </svg>
         </div>
       </div>
     );
@@ -66,7 +94,7 @@ export const ItemNotificationsProvider = ({ children }: { children: React.ReactN
     const timeout = setTimeout(() => {
       queue.remove();
       clearTimeout(timeout);
-    }, 2500);
+    }, 3000);
   };
 
   useNuiEvent<[item: SlotWithItem, text: string, count?: number]>('itemNotify', ([item, text, count]) => {
